@@ -2,50 +2,66 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import 'hospital.dart'; // Import the HOS page
-import 'location.dart'; // Import the HomeScreen
+
 
 class TimerPage extends StatefulWidget {
   final LatLng? coordinates;
 
-  TimerPage({this.coordinates});
+  const TimerPage({super.key, this.coordinates});
 
   @override
   _TimerPageState createState() => _TimerPageState();
 }
 
 class _TimerPageState extends State<TimerPage> {
-  int countdown = 10;
-  late Timer _timer;
+  int _counter = 10;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    startCountdown();
+    _startCountdown();
   }
 
-  void startCountdown() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (countdown > 0) {
-          countdown--;
-        } else {
-          _timer.cancel();
-          sendEmailRequest();
-          navigateToHospitalMailPage();
-        }
-      });
+  void _startCountdown() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      if (_counter > 0) {
+        setState(() {
+          _counter--;
+        });
+      } else {
+        timer.cancel();
+        _navigateToInformingContactsPage();
+      }
     });
+  }
+
+  void _navigateToInformingContactsPage() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const HOS()),
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   Future<void> sendEmailRequest() async {
     const url =
+ ARS-shashank
+        'http://ars-server-eight.vercel.app/send-email'; // Replace with your Flask API URL
+
         'https://ars-server-eight.vercel.app/send-email'; // works for anyone
+ main
     const receiverEmail =
-        'chalasaniajitha@gmail.com'; //replace with receiver email
+        'shashanksunilrao@gmail.com'; //replace with receiver email
     const name = 'John Doe';
     final coordinates = {
       'latitude': widget.coordinates?.latitude.toString(),
@@ -72,151 +88,58 @@ class _TimerPageState extends State<TimerPage> {
   void navigateToHospitalMailPage() {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-          builder: (context) => HOS()), // Ensure this import is correct
+          builder: (context) => const HOS()), // Ensure this import is correct
     );
   }
 
+  
   @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-
+    Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
-        child: Container(
-          width: screenWidth * 0.9,
-          height: screenHeight * 0.9,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(45),
-            border: Border.all(width: 10),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Container(
-                width: 180,
-                height: 180,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 0,
-                      top: 0,
-                      child: Container(
-                        width: 180,
-                        height: 180,
-                        decoration: ShapeDecoration(
-                          color: Color(0xFFE52A2D),
-                          shape: StarBorder.polygon(sides: 3),
-                        ),
-                      ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Image.asset(
+                      'assets/images/alert.png',
+                      width: 124,
+                      height: 111,
                     ),
-                    Positioned(
-                      left: 78,
-                      top: 99,
-                      child: Container(
-                        width: 22,
-                        height: 22,
-                        decoration: ShapeDecoration(
-                          color: Colors.white,
-                          shape: OvalBorder(),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 78,
-                      top: 43,
-                      child: Container(
-                        width: 22,
-                        height: 22,
-                        decoration: ShapeDecoration(
-                          color: Colors.white,
-                          shape: OvalBorder(),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 100.87,
-                      top: 89.80,
-                      child: Transform(
-                        transform: Matrix4.identity()
-                          ..translate(0.0, 0.0)
-                          ..rotateZ(3.12),
-                        child: Container(
-                          width: 22,
-                          height: 38.81,
-                          decoration: ShapeDecoration(
-                            color: Colors.white,
-                            shape: StarBorder.polygon(sides: 3),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+            const SizedBox(height: 40.0),
+            Text(
+              'An Accident has been detected!',
+              style: GoogleFonts.hammersmithOne(
+                fontSize: 40.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 40.0),
+            Text(
+              '$_counter',
+              style: const TextStyle(
+                fontSize: 48.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 40.0),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // This takes you back to the previous page
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+                textStyle: const TextStyle(
+                  fontSize: 18.0,
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
-                child: Text(
-                  'EMERGENCY ALERT\n',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.15,
-                  ),
-                ),
-              ),
-              Text(
-                'Seconds Remaining',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 25,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              Text(
-                countdown.toString(),
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Color(0xFFE52A2D),
-                  fontSize: 60,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  _timer.cancel();
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => HomeScreen()),
-                  );
-                },
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Color(0xFFE52A2D),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.1,
-                    vertical: screenHeight * 0.02,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                ),
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
-                ),
-              ),
-            ],
-          ),
+              child: const Text('Cancel'),
+            ),
+          ],
         ),
       ),
     );

@@ -51,10 +51,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Location App'),
-        centerTitle: true,
-      ),
+      
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
