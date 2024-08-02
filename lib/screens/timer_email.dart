@@ -43,7 +43,7 @@ class _TimerPageState extends State<TimerPage> {
 
   Future<void> sendEmailRequest() async {
     const url =
-        'http://ars-server-eight.vercel.app/send-email'; // works for anyone
+        'https://ars-server-eight.vercel.app/send-email'; // works for anyone
     const receiverEmail =
         'chalasaniajitha@gmail.com'; //replace with receiver email
     const name = 'John Doe';
