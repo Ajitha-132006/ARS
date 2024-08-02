@@ -62,8 +62,8 @@ class _InfareState extends State<Infare> {
                         Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Image.asset(
-                            'assets/images/Image placeholder.png',
-                            height: 200,
+                            'assets/images/SOS.png',
+                            height: 150,
                             width: double.infinity,
                             fit: BoxFit.cover,
                           ),
@@ -71,7 +71,7 @@ class _InfareState extends State<Infare> {
                         Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Text(
-                            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut ',
+                            'First,Connect to the main device using Bluetooth and pair with the device under the name of "AccidentDetector" ',
                             style: GoogleFonts.gothicA1(
                               color: Colors.white,
                               fontSize: 16.0,
@@ -88,7 +88,7 @@ class _InfareState extends State<Infare> {
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Text(
-                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut ',
+                        'Then,Make sure to attach it to your car and enter the details of your car and emergency contacts via this app ',
                         style: GoogleFonts.gothicA1(
                           color: Colors.white,
                           fontSize: 16.0,
