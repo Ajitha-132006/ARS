@@ -64,8 +64,7 @@ class _HOSState extends State<HOS> {
           ));
         }
       });
-      // Start the timer to send email after 10 seconds
-      Timer(const Duration(seconds: 10), _sendEmail);
+      Timer(const Duration(seconds: 2), _sendEmail);
     }
   }
 

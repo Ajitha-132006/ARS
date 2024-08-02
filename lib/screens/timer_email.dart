@@ -55,7 +55,11 @@ class _TimerPageState extends State<TimerPage> {
 
   Future<void> sendEmailRequest() async {
     const url =
+ ARS-shashank
         'http://ars-server-eight.vercel.app/send-email'; // Replace with your Flask API URL
+
+        'https://ars-server-eight.vercel.app/send-email'; // works for anyone
+ main
     const receiverEmail =
         'shashanksunilrao@gmail.com'; //replace with receiver email
     const name = 'John Doe';
