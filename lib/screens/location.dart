@@ -60,8 +60,8 @@ class _HomeScreenState extends State<Location> with WidgetsBindingObserver {
                 Column(
                   children: [
                     Expanded(
-                      child: permissionGranted
-                          ? GoogleMap(
+                      child: 
+                           GoogleMap(
                               initialCameraPosition: CameraPosition(
                                 target: lastKnownPosition ?? const LatLng(0, 0),
                                 zoom: 15.0,
@@ -75,8 +75,7 @@ class _HomeScreenState extends State<Location> with WidgetsBindingObserver {
                                 }
                               },
                             )
-                          : const Center(
-                              child: Text('Requesting location permission...')),
+                           
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -134,7 +133,7 @@ class _HomeScreenState extends State<Location> with WidgetsBindingObserver {
                       ),
                       SpeedDialChild(
                         child: const Icon(Icons.help),
-                        backgroundColor: Colors.green,
+                        backgroundColor: const Color.fromARGB(255, 255, 0, 0),
                         label: 'How to Connect',
                         labelStyle: const TextStyle(fontSize: 16.0),
                         onTap: () {
