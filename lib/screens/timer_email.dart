@@ -55,11 +55,7 @@ class _TimerPageState extends State<TimerPage> {
 
   Future<void> sendEmailRequest() async {
     const url =
- ARS-shashank
-        'http://ars-server-eight.vercel.app/send-email'; // Replace with your Flask API URL
-
         'https://ars-server-eight.vercel.app/send-email'; // works for anyone
- main
     const receiverEmail =
         'shashanksunilrao@gmail.com'; //replace with receiver email
     const name = 'John Doe';
@@ -93,8 +89,10 @@ class _TimerPageState extends State<TimerPage> {
   }
 
   
+   // Example counter value
+
   @override
-    Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -102,17 +100,21 @@ class _TimerPageState extends State<TimerPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Image.asset(
-                      'assets/images/alert.png',
-                      width: 124,
-                      height: 111,
-                    ),
+              'assets/images/alert.png',
+              width: 150,
+              height: 120,
+            ),
             const SizedBox(height: 40.0),
-            Text(
-              'An Accident has been detected!',
-              style: GoogleFonts.hammersmithOne(
-                fontSize: 40.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                'An Accident has been detected!',
+                style: GoogleFonts.hammersmithOne(
+                  fontSize: 40.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(height: 40.0),
@@ -145,3 +147,5 @@ class _TimerPageState extends State<TimerPage> {
     );
   }
 }
+
+

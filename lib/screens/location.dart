@@ -1,21 +1,25 @@
 import 'dart:async';
-
+import 'package:abcd/screens/about.dart';
+import 'package:abcd/screens/infopage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as l;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'dart:ui' as ui;
+import 'addingemail.dart';
 
 import 'timer_email.dart'; // Import the TimerPage
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class Location extends StatefulWidget {
+  const Location({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<Location> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+class _HomeScreenState extends State<Location> with WidgetsBindingObserver {
   bool gpsEnabled = false;
   bool permissionGranted = false;
   bool isLoading = true;
@@ -41,8 +45,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  @override
-  // ignore: override_on_non_overriding_member
   void didPopNext() {
     // Called when the current route has been popped off, and the current route shows up.
     startTracking();
@@ -51,46 +53,110 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Column(
+          : Stack(
               children: [
-                Expanded(
-                  child: permissionGranted
-                      ? GoogleMap(
-                          initialCameraPosition: CameraPosition(
-                            target: lastKnownPosition ?? const LatLng(0, 0),
-                            zoom: 15.0,
-                          ),
-                          markers: userMarker != null ? {userMarker!} : {},
-                          onMapCreated: (controller) {
-                            mapController = controller;
-                            if (userMarker != null) {
-                              mapController?.animateCamera(
-                                  CameraUpdate.newLatLng(userMarker!.position));
-                            }
-                          },
-                        )
-                      : const Center(
-                          child: Text('Requesting location permission...')),
+                Column(
+                  children: [
+                    Expanded(
+                      child: permissionGranted
+                          ? GoogleMap(
+                              initialCameraPosition: CameraPosition(
+                                target: lastKnownPosition ?? const LatLng(0, 0),
+                                zoom: 15.0,
+                              ),
+                              markers: userMarker != null ? {userMarker!} : {},
+                              onMapCreated: (controller) {
+                                mapController = controller;
+                                if (userMarker != null) {
+                                  mapController?.animateCamera(
+                                      CameraUpdate.newLatLng(userMarker!.position));
+                                }
+                              },
+                            )
+                          : const Center(
+                              child: Text('Requesting location permission...')),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final result = await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => TimerPage(
+                                coordinates: lastKnownPosition,
+                              ),
+                            ),
+                          );
+                          if (result == true) {
+                            startTracking(); // Restart tracking if coming back from TimerPage
+                          }
+                        },
+                        child: const Text('Trigger Action'),
+                      ),
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final result = await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => TimerPage(
-                            coordinates: lastKnownPosition,
-                          ),
-                        ),
-                      );
-                      if (result == true) {
-                        startTracking(); // Restart tracking if coming back from TimerPage
-                      }
-                    },
-                    child: const Text('Trigger Action'),
+                Positioned(
+                  bottom: 16.0,
+                  right: 16.0,
+                  child: SpeedDial(
+                    icon: Icons.menu,
+                    activeIcon: Icons.close,
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    activeBackgroundColor: Colors.blue,
+                    activeForegroundColor: Colors.white,
+                    buttonSize: ui.Size(56.0, 56.0),
+                    visible: true,
+                    closeManually: false,
+                    renderOverlay: false,
+                    overlayOpacity: 0.5,
+                    overlayColor: Colors.black,
+                    tooltip: 'Options',
+                    heroTag: 'speed-dial-hero-tag',
+                    elevation: 8.0,
+                    shape: const CircleBorder(),
+                    children: [
+                      SpeedDialChild(
+                        child: const Icon(Icons.contact_phone),
+                        backgroundColor: Colors.red,
+                        label: 'Add Emergency Contacts',
+                        labelStyle: const TextStyle(fontSize: 16.0),
+                        onTap: () {
+                           Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => AddingEmailPage()),
+                            );
+                          // Implement your action for Add Emergency Contacts
+                        },
+                      ),
+                      SpeedDialChild(
+                        child: const Icon(Icons.help),
+                        backgroundColor: Colors.green,
+                        label: 'How to Connect',
+                        labelStyle: const TextStyle(fontSize: 16.0),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Infare()),
+                            );
+                        },
+                      ),
+                      SpeedDialChild(
+                        child: const Icon(Icons.info),
+                        backgroundColor: Colors.orange,
+                        label: 'About Page',
+                        labelStyle: const TextStyle(fontSize: 16.0),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => AboutPage()),
+                            );
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ],

@@ -102,7 +102,7 @@ class _InfareState extends State<Infare> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                             builder: (context) =>
-                                const HomeScreen()), // Navigate to HomeScreen
+                                const Location()), // Navigate to HomeScreen
                       );
                     },
                     style: ElevatedButton.styleFrom(
