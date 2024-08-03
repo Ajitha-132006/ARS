@@ -10,8 +10,9 @@ import 'location.dart'; // Import the HomeScreen
 
 class TimerPage extends StatefulWidget {
   final LatLng? coordinates;
+  final emergencyEmail;
 
-  TimerPage({this.coordinates});
+  TimerPage({this.coordinates, this.emergencyEmail});
 
   @override
   _TimerPageState createState() => _TimerPageState();
@@ -44,9 +45,7 @@ class _TimerPageState extends State<TimerPage> {
   Future<void> sendEmailRequest() async {
     const url =
         'https://ars-server-eight.vercel.app/send-email'; // works for anyone
-    const receiverEmail =
-        'chalasaniajitha@gmail.com'; //replace with receiver email
-    const name = 'John Doe';
+    const name = 'Ajitha';
     final coordinates = {
       'latitude': widget.coordinates?.latitude.toString(),
       'longitude': widget.coordinates?.longitude.toString(),
@@ -56,7 +55,7 @@ class _TimerPageState extends State<TimerPage> {
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        'receiver_email': receiverEmail,
+        'receiver_email': widget.emergencyEmail,
         'name': name,
         'coordinates': coordinates,
       }),

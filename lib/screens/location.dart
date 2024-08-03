@@ -24,11 +24,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   GoogleMapController? mapController;
   Marker? userMarker;
   LatLng? lastKnownPosition;
+  TextEditingController emailController = TextEditingController();
+  TextEditingController contactController = TextEditingController();
+  TextEditingController emergencyEmailController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    loadProfileData();
     loadLastKnownLocation().then((_) {
       checkStatus();
     });
@@ -42,7 +46,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   @override
-  // ignore: override_on_non_overriding_member
   void didPopNext() {
     // Called when the current route has been popped off, and the current route shows up.
     startTracking();
@@ -52,8 +55,47 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Location App'),
-        centerTitle: true,
+        title: Text('Location Tracker'),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              child: Text('Profile Information'),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+            ),
+            ListTile(
+              title: TextField(
+                controller: emailController,
+                decoration: InputDecoration(labelText: 'Email'),
+              ),
+            ),
+            ListTile(
+              title: TextField(
+                controller: contactController,
+                decoration: InputDecoration(labelText: 'Contact Number'),
+              ),
+            ),
+            ListTile(
+              title: TextField(
+                controller: emergencyEmailController,
+                decoration: InputDecoration(labelText: 'Emergency Email'),
+              ),
+            ),
+            ListTile(
+              title: ElevatedButton(
+                onPressed: () {
+                  saveProfileData();
+                  Navigator.pop(context);
+                },
+                child: Text('Save'),
+              ),
+            ),
+          ],
+        ),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -86,6 +128,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         MaterialPageRoute(
                           builder: (context) => TimerPage(
                             coordinates: lastKnownPosition,
+                            emergencyEmail: emergencyEmailController.text,
                           ),
                         ),
                       );
@@ -185,6 +228,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
     setState(() {
       isLoading = false;
+    });
+  }
+
+  Future<void> saveProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', emailController.text);
+    await prefs.setString('contact', contactController.text);
+    await prefs.setString('emergency_email', emergencyEmailController.text);
+  }
+
+  Future<void> loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      emailController.text = prefs.getString('email') ?? '';
+      contactController.text = prefs.getString('contact') ?? '';
+      emergencyEmailController.text = prefs.getString('emergency_email') ?? '';
     });
   }
 }

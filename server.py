@@ -23,6 +23,7 @@ def send_email():
 
         receiver_email = data.get('receiver_email')
         coordinates = data.get('coordinates')
+        name = data.get('name')  # This line is related to the `name` key
         if not receiver_email or not coordinates:
             return jsonify({'error': 'Missing receiver_email or coordinates in request'}), 400
 
@@ -31,12 +32,11 @@ def send_email():
         if not latitude or not longitude:
             return jsonify({'error': 'Missing latitude or longitude in coordinates'}), 400
 
+        # Create and send the email
         msg = Message('EMERGENCY ALERT', sender='rnc.ars@outlook.com', recipients=[receiver_email])
         msg.body = f"EMERGENCY ALERT\nAmbulance assistance required at the current location:\nLatitude: {latitude}, Longitude: {longitude}\n\nGoogle Maps: https://maps.google.com/?q={latitude},{longitude}"
         mail.send(msg)
+        
         return jsonify({'message': 'Email sent successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-if __name__ == '__main__':
-    app.run("0.0.0.0", port=5000, debug=True)

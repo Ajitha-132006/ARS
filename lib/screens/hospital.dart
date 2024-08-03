@@ -1,6 +1,5 @@
 // ignore_for_file: unused_field
 
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -64,50 +63,7 @@ class _HOSState extends State<HOS> {
           ));
         }
       });
-      Timer(const Duration(seconds: 2), _sendEmail);
     }
-  }
-
-  _sendEmail() async {
-    const url =
-        'http://10.70.5.184:5000/send-email'; // Replace with your server IP or localhost if testing locally
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        "receiver_email": "chalasaniajitha@gmail.com",
-        "name": "Ajitha",
-        "coordinates": {
-          "latitude": "${_currentPosition.latitude}",
-          "longitude": "${_currentPosition.longitude}"
-        }
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      _showPopupMessage('Email sent successfully');
-    } else {
-      _showPopupMessage('Failed to send email: ${response.body}');
-    }
-  }
-
-  _showPopupMessage(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Text(message),
-          actions: [
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
