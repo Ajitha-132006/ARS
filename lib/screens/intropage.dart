@@ -60,7 +60,7 @@ class _IntropageState extends State<Intropage> {
                 child: Column(
                   children: [
                     Image.asset(
-                      'assets/images/Vector.png',
+                      'assets/images/vector.jpg',
                       width: 124,
                       height: 111,
                     ),

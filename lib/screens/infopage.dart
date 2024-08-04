@@ -62,7 +62,7 @@ class _InfareState extends State<Infare> {
                         Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Image.asset(
-                            'assets/images/SOS.png',
+                            'assets/images/SOS.jpg',
                             height: 150,
                             width: double.infinity,
                             fit: BoxFit.cover,

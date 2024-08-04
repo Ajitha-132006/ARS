@@ -16,8 +16,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
-  bool gpsEnabled = false;
-  bool permissionGranted = false;
+  bool gpsEnabled = true;
+  bool permissionGranted = true;
   bool isLoading = true;
   l.Location location = l.Location();
   late StreamSubscription<l.LocationData> subscription;
