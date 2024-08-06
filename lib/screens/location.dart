@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:abcd/screens/about.dart';
 import 'package:abcd/screens/infopage.dart';
+import 'package:abcd/screens/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as l;
@@ -60,22 +61,20 @@ class _HomeScreenState extends State<Location> with WidgetsBindingObserver {
                 Column(
                   children: [
                     Expanded(
-                      child: 
-                           GoogleMap(
-                              initialCameraPosition: CameraPosition(
-                                target: lastKnownPosition ?? const LatLng(0, 0),
-                                zoom: 15.0,
-                              ),
-                              markers: userMarker != null ? {userMarker!} : {},
-                              onMapCreated: (controller) {
-                                mapController = controller;
-                                if (userMarker != null) {
-                                  mapController?.animateCamera(
-                                      CameraUpdate.newLatLng(userMarker!.position));
-                                }
-                              },
-                            )
-                           
+                      child: GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: lastKnownPosition ?? const LatLng(0, 0),
+                          zoom: 15.0,
+                        ),
+                        markers: userMarker != null ? {userMarker!} : {},
+                        onMapCreated: (controller) {
+                          mapController = controller;
+                          if (userMarker != null) {
+                            mapController?.animateCamera(
+                                CameraUpdate.newLatLng(userMarker!.position));
+                          }
+                        },
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -98,8 +97,8 @@ class _HomeScreenState extends State<Location> with WidgetsBindingObserver {
                   ],
                 ),
                 Positioned(
-                  bottom: 16.0,
-                  right: 16.0,
+                  top: 80.0, // Adjusted to shift the icon about two lines down
+                  left: 16.0,
                   child: SpeedDial(
                     icon: Icons.menu,
                     activeIcon: Icons.close,
@@ -107,28 +106,30 @@ class _HomeScreenState extends State<Location> with WidgetsBindingObserver {
                     foregroundColor: Colors.white,
                     activeBackgroundColor: Colors.blue,
                     activeForegroundColor: Colors.white,
-                    buttonSize: ui.Size(56.0, 56.0),
+                    buttonSize: const Size(56.0, 56.0),
                     visible: true,
                     closeManually: false,
-                    renderOverlay: false,
+                    renderOverlay: true, // Ensure overlay is rendered
                     overlayOpacity: 0.5,
                     overlayColor: Colors.black,
                     tooltip: 'Options',
                     heroTag: 'speed-dial-hero-tag',
                     elevation: 8.0,
                     shape: const CircleBorder(),
+                    direction: SpeedDialDirection.down, // Ensure pop-up widgets appear below the icon
                     children: [
                       SpeedDialChild(
                         child: const Icon(Icons.contact_phone),
                         backgroundColor: Colors.red,
                         label: 'Add Emergency Contacts',
                         labelStyle: const TextStyle(fontSize: 16.0),
+                        labelBackgroundColor: Colors.white,
                         onTap: () {
-                           Navigator.push(
+                          Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => AddingEmailPage()),
-                            );
-                          // Implement your action for Add Emergency Contacts
+                            MaterialPageRoute(
+                                builder: (context) => AddingEmailPage()),
+                          );
                         },
                       ),
                       SpeedDialChild(
@@ -136,11 +137,12 @@ class _HomeScreenState extends State<Location> with WidgetsBindingObserver {
                         backgroundColor: const Color.fromARGB(255, 255, 0, 0),
                         label: 'How to Connect',
                         labelStyle: const TextStyle(fontSize: 16.0),
+                        labelBackgroundColor: Colors.white,
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => Infare()),
-                            );
+                          );
                         },
                       ),
                       SpeedDialChild(
@@ -148,11 +150,26 @@ class _HomeScreenState extends State<Location> with WidgetsBindingObserver {
                         backgroundColor: Colors.orange,
                         label: 'About Page',
                         labelStyle: const TextStyle(fontSize: 16.0),
+                        labelBackgroundColor: Colors.white,
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => AboutPage()),
-                            );
+                          );
+                        },
+                      ),
+                      SpeedDialChild(
+                        child: const Icon(Icons.person),
+                        backgroundColor: Colors.green,
+                        label: 'Profile',
+                        labelStyle: const TextStyle(fontSize: 16.0),
+                        labelBackgroundColor: Colors.white,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ProfilePage()),
+                          );
+                          
                         },
                       ),
                     ],

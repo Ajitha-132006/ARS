@@ -1,45 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddingEmailPage extends StatefulWidget {
-  const AddingEmailPage({super.key});
-
   @override
   _AddingEmailPageState createState() => _AddingEmailPageState();
 }
 
 class _AddingEmailPageState extends State<AddingEmailPage> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final List<String> _emails = [];
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _loadEmails();
   }
 
-  String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter an email';
-    }
-    final emailRegex = RegExp(r'^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$');
-    //Email verification
-    if (!emailRegex.hasMatch(value)) {
-      return 'Enter a valid email address';
-    }
-    return null;
+  Future<void> _loadEmails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _emails.addAll(prefs.getStringList('emergency_emails') ?? []);
+    });
   }
 
-  void _submitEmail() {
-    if (_formKey.currentState?.validate() ?? false) {
+  Future<void> _saveEmails() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('emergency_emails', _emails);
+  }
+
+  void _addEmail() {
+    if (_emailController.text.isNotEmpty) {
       setState(() {
-        _emails.add(_controller.text);
-        _controller.clear();
+        _emails.add(_emailController.text);
+        _emailController.clear();
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Email is valid and stored!')),
-      );
+      _saveEmails();
     }
   }
 
@@ -47,92 +42,47 @@ class _AddingEmailPageState extends State<AddingEmailPage> {
     setState(() {
       _emails.removeAt(index);
     });
+    _saveEmails();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
-          'Add Email',
-          style: GoogleFonts.hammersmithOne(),
-        ),
+        title: Text('Add Emergency Emails'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: _emails.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: ListTile(
-                      leading: IconButton(
-                        icon: Icon(Icons.remove_circle, color: Colors.red),
-                        onPressed: () => _removeEmail(index),
-                      ),
-                      title: Text(
-                        _emails[index],
-                        style: GoogleFonts.hammersmithOne(),
-                      ),
-                      tileColor: Colors.grey[200],
-                    ),
-                  );
-                },
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _emailController,
+              decoration: InputDecoration(
+                labelText: 'Enter email',
+                border: OutlineInputBorder(),
               ),
             ),
-            Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  EmailEntryWidget(
-                    controller: _controller,
-                    validator: _validateEmail,
+          ),
+          ElevatedButton(
+            onPressed: _addEmail,
+            child: Text('Add Email'),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _emails.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(_emails[index]),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () => _removeEmail(index),
                   ),
-                  SizedBox(height: 16.0),
-                  ElevatedButton(
-                    onPressed: _submitEmail,
-                    child: Text(
-                      'Submit',
-                      style: GoogleFonts.hammersmithOne(),
-                    ),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-}
-
-class EmailEntryWidget extends StatelessWidget {
-  final TextEditingController controller;
-  final String? Function(String?)? validator;
-
-  EmailEntryWidget({super.key, required this.controller, this.validator});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: 'Email',
-        labelStyle: GoogleFonts.hammersmithOne(),
-      ),
-      validator: validator,
-      style: GoogleFonts.hammersmithOne(),
-    );
-  }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: AddingEmailPage(),
-  ));
 }

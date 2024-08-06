@@ -47,6 +47,8 @@ dependencies:
   flutter_dotenv: ^5.1.0
   mailer: ^6.1.2
   flutter_speed_dial: ^7.0.0
+  http: ^1.0.0
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +79,8 @@ flutter:
     - assets/images/SOS.png
     - assets/images/alert.png
     - assets/images/RNC.jpg
+    - assets/images/blue_circle.png
+    - assets/images/hospital_marker.png
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

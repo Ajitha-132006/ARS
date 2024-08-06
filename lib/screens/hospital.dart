@@ -1,5 +1,3 @@
-// ignore_for_file: unused_field
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -7,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class HOS extends StatefulWidget {
   const HOS({super.key});
@@ -18,7 +17,7 @@ class HOS extends StatefulWidget {
 
 class _HOSState extends State<HOS> {
   late GoogleMapController _controller;
-  late Position _currentPosition;
+  Position? _currentPosition;
   final Set<Marker> _markers = {};
   final String _googleAPIKey = 'AIzaSyBWtRd8hzTy8nXQqIy3qAh-gPF7uvVamqs';
 
@@ -40,12 +39,12 @@ class _HOSState extends State<HOS> {
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
       ));
     });
-    _getNearbyHospitals();
+    await _getNearbyHospitals();
   }
 
-  _getNearbyHospitals() async {
+  Future<void> _getNearbyHospitals() async {
     final url =
-        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_currentPosition.latitude},${_currentPosition.longitude}&radius=2000&type=hospital&key=$_googleAPIKey';
+        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_currentPosition?.latitude},${_currentPosition?.longitude}&radius=2000&type=hospital&key=$_googleAPIKey';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -58,13 +57,29 @@ class _HOSState extends State<HOS> {
             markerId: MarkerId(result['place_id']),
             position: LatLng(result['geometry']['location']['lat'],
                 result['geometry']['location']['lng']),
-            infoWindow: InfoWindow(title: result['name']),
+            infoWindow: InfoWindow(
+              title: result['name'],
+              onTap: () {
+                _openGoogleMaps(result['geometry']['location']['lat'],
+                    result['geometry']['location']['lng']);
+              },
+            ),
             icon:
                 BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
           ));
         }
       });
       Timer(const Duration(seconds: 2), _sendEmail);
+    }
+  }
+
+  _openGoogleMaps(double lat, double lng) async {
+    final url =
+        'https://www.google.com/maps/dir/?api=1&origin=${_currentPosition?.latitude},${_currentPosition?.longitude}&destination=$lat,$lng&travelmode=driving';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 
@@ -78,8 +93,8 @@ class _HOSState extends State<HOS> {
         "receiver_email": "chalasaniajitha@gmail.com",
         "name": "Ajitha",
         "coordinates": {
-          "latitude": "${_currentPosition.latitude}",
-          "longitude": "${_currentPosition.longitude}"
+          "latitude": "${_currentPosition?.latitude}",
+          "longitude": "${_currentPosition?.longitude}"
         }
       }),
     );
@@ -117,19 +132,20 @@ class _HOSState extends State<HOS> {
         title: const Text('Nearby Hospitals'),
         centerTitle: true,
       ),
-      body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          // ignore: unnecessary_null_comparison
-          target: _currentPosition != null
-              ? LatLng(_currentPosition.latitude, _currentPosition.longitude)
-              : const LatLng(0, 0),
-          zoom: 15.0,
-        ),
-        markers: _markers,
-        onMapCreated: (controller) {
-          _controller = controller;
-        },
-      ),
+      body: _currentPosition == null
+          ? const Center(child: CircularProgressIndicator())
+          : GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: LatLng(
+                    _currentPosition!.latitude, _currentPosition!.longitude),
+                zoom: 15.0,
+              ),
+              markers: _markers,
+              onMapCreated: (controller) {
+                _controller = controller;
+              },
+              myLocationButtonEnabled: false, // Disable the location button
+            ),
     );
   }
 }
