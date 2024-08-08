@@ -1,16 +1,16 @@
 import 'dart:async';
-import 'package:abcd/screens/about.dart';
-import 'package:abcd/screens/infopage.dart';
-import 'package:abcd/screens/profile_page.dart';
+
+import 'package:ResQ/screens/about.dart';
+import 'package:ResQ/screens/infopage.dart';
+import 'package:ResQ/screens/profile_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as l;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'dart:ui' as ui;
-import 'addingemail.dart';
 
+import 'addingemail.dart';
 import 'timer_email.dart'; // Import the TimerPage
 
 class Location extends StatefulWidget {
@@ -116,7 +116,8 @@ class _HomeScreenState extends State<Location> with WidgetsBindingObserver {
                     heroTag: 'speed-dial-hero-tag',
                     elevation: 8.0,
                     shape: const CircleBorder(),
-                    direction: SpeedDialDirection.down, // Ensure pop-up widgets appear below the icon
+                    direction: SpeedDialDirection
+                        .down, // Ensure pop-up widgets appear below the icon
                     children: [
                       SpeedDialChild(
                         child: const Icon(Icons.contact_phone),
@@ -154,7 +155,8 @@ class _HomeScreenState extends State<Location> with WidgetsBindingObserver {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => AboutPage()),
+                            MaterialPageRoute(
+                                builder: (context) => AboutPage()),
                           );
                         },
                       ),
@@ -167,9 +169,9 @@ class _HomeScreenState extends State<Location> with WidgetsBindingObserver {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => ProfilePage()),
+                            MaterialPageRoute(
+                                builder: (context) => ProfilePage()),
                           );
-                          
                         },
                       ),
                     ],
