@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'location.dart'; 
+//Correct import for HomeScreen
 
-import 'location.dart'; // Correct import for HomeScreen
+
 
 class Infare extends StatefulWidget {
   const Infare({super.key});
@@ -102,7 +104,7 @@ class _InfareState extends State<Infare> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                             builder: (context) =>
-                                const HomeScreen()), // Navigate to HomeScreen
+                                const Location()), // Navigate to HomeScreen
                       );
                     },
                     style: ElevatedButton.styleFrom(

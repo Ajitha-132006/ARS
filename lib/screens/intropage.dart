@@ -28,7 +28,7 @@ class _IntropageState extends State<Intropage> {
       });
     });
 
-    Future.delayed(const Duration(seconds: 9), () {
+    Future.delayed(const Duration(seconds: 4), () {
       setState(() {
         _navigateToInfoPage();
       });

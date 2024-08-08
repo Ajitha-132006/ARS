@@ -5,83 +5,78 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'hospital.dart'; // Import the HOS page
-
+import 'location.dart'; // Import the HomeScreen
 
 class TimerPage extends StatefulWidget {
   final LatLng? coordinates;
 
-  const TimerPage({super.key, this.coordinates});
+  TimerPage({this.coordinates});
 
   @override
   _TimerPageState createState() => _TimerPageState();
 }
 
 class _TimerPageState extends State<TimerPage> {
-  int _counter = 10;
-  Timer? _timer;
+  int countdown = 10;
+  late Timer _timer;
+  List<String> emergencyEmails = [];
 
   @override
   void initState() {
     super.initState();
-    _startCountdown();
+    _loadEmails();
+    startCountdown();
   }
 
-  void _startCountdown() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
-      if (_counter > 0) {
-        setState(() {
-          _counter--;
-        });
-      } else {
-        timer.cancel();
-        _navigateToInformingContactsPage();
-      }
+  Future<void> _loadEmails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      emergencyEmails = prefs.getStringList('emergency_emails') ?? [];
     });
   }
 
-  void _navigateToInformingContactsPage() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const HOS()),
-    );
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
+  void startCountdown() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (countdown > 0) {
+          countdown--;
+        } else {
+          _timer.cancel();
+          sendEmailRequest();
+          navigateToHospitalMailPage();
+        }
+      });
+    });
   }
 
   Future<void> sendEmailRequest() async {
     const url =
- ARS-shashank
-        'http://ars-server-eight.vercel.app/send-email'; // Replace with your Flask API URL
-
         'https://ars-server-eight.vercel.app/send-email'; // works for anyone
- main
-    const receiverEmail =
-        'shashanksunilrao@gmail.com'; //replace with receiver email
-    const name = 'John Doe';
+    const name = 'Ajitha';
     final coordinates = {
       'latitude': widget.coordinates?.latitude.toString(),
       'longitude': widget.coordinates?.longitude.toString(),
     };
 
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'receiver_email': receiverEmail,
-        'name': name,
-        'coordinates': coordinates,
-      }),
-    );
+    for (var email in emergencyEmails) {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'receiver_email': email,
+          'name': name,
+          'coordinates': coordinates,
+        }),
+      );
 
-    if (response.statusCode == 200) {
-      print('Email sent successfully');
-    } else {
-      print('Failed to send email');
+      if (response.statusCode == 200) {
+        print('Email sent successfully to $email');
+      } else {
+        print('Failed to send email to $email');
+      }
     }
   }
 
@@ -92,9 +87,14 @@ class _TimerPageState extends State<TimerPage> {
     );
   }
 
-  
   @override
-    Widget build(BuildContext context) {
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -102,22 +102,26 @@ class _TimerPageState extends State<TimerPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Image.asset(
-                      'assets/images/alert.png',
-                      width: 124,
-                      height: 111,
-                    ),
+              'assets/images/alert.png',
+              width: 150,
+              height: 120,
+            ),
             const SizedBox(height: 40.0),
-            Text(
-              'An Accident has been detected!',
-              style: GoogleFonts.hammersmithOne(
-                fontSize: 40.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                'An Accident has been detected!',
+                style: GoogleFonts.hammersmithOne(
+                  fontSize: 40.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(height: 40.0),
             Text(
-              '$_counter',
+              '$countdown',
               style: const TextStyle(
                 fontSize: 48.0,
                 fontWeight: FontWeight.bold,
